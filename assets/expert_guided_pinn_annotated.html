@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expert-Guided PINN — Annotated Reading Copy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EDEAE0;
+    --paper-card:#F8F6EF;
+    --ink:#201D18;
+    --ink-soft:#5A5449;
+    --rule:#D8D2C2;
+    --rubric:#8C3A2B;
+    --serif:'Spectral', Georgia, 'Times New Roman', serif;
+    --sans:'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --mono:'IBM Plex Mono', 'Courier New', monospace;
+
+    --c-reliability:#6B4271;
+    --c-architecture:#2E6E8E;
+    --c-alignment:#A6772C;
+    --c-formalization:#45527A;
+    --c-evaluation:#2F6B62;
+    --c-explanation:#6B6B2C;
+    --c-epixai:#8A5A3F;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--serif);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:#D8B9A8; }
+
+  a{ color:inherit; }
+  a.src-link{ color:var(--ink); text-decoration-color:var(--ink-soft); }
+  a.src-link:hover{ text-decoration-color:var(--ink); }
+
+  .wrap{ max-width:1200px; margin:0 auto; padding:3.2rem 1.5rem 6rem; }
+
+  /* ---------- Masthead ---------- */
+  .masthead{
+    max-width:800px;
+    margin-bottom:2.4rem;
+    border-bottom:1px solid var(--rule);
+    padding-bottom:2rem;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:.72rem;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--rubric);
+    margin:0 0 .9rem;
+  }
+  h1{
+    font-family:var(--serif);
+    font-weight:600;
+    font-size:clamp(2rem, 4vw, 2.7rem);
+    line-height:1.15;
+    margin:0 0 .8rem;
+  }
+  h1 em{ font-style:italic; font-weight:500; color:var(--ink-soft); }
+  .dek{
+    font-family:var(--sans);
+    font-size:1rem;
+    color:var(--ink-soft);
+    max-width:62ch;
+    margin:0 0 .9rem;
+  }
+  .dek.small{ font-size:.88rem; }
+
+  .legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:.5rem;
+    margin:1.2rem 0 1rem;
+  }
+  .legend-chip{
+    font-family:var(--sans);
+    font-size:.78rem;
+    font-weight:500;
+    border:1px solid var(--rule);
+    background:var(--paper-card);
+    color:var(--ink);
+    padding:.4rem .7rem;
+    border-radius:3px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:.4rem;
+    transition:background .15s, color .15s, border-color .15s;
+  }
+  .legend-chip .m{ font-family:var(--serif); font-weight:600; }
+  .legend-chip[data-cat="reliability"] .m{ color:var(--c-reliability); }
+  .legend-chip[data-cat="architecture"] .m{ color:var(--c-architecture); }
+  .legend-chip[data-cat="alignment"] .m{ color:var(--c-alignment); }
+  .legend-chip[data-cat="formalization"] .m{ color:var(--c-formalization); }
+  .legend-chip[data-cat="evaluation"] .m{ color:var(--c-evaluation); }
+  .legend-chip[data-cat="explanation"] .m{ color:var(--c-explanation); }
+  .legend-chip[data-cat="epixai"] .m{ color:var(--c-epixai); }
+  .legend-chip.active{ background:var(--ink); color:var(--paper-card); border-color:var(--ink); }
+  .legend-chip.active .m{ color:inherit; }
+  .legend-reset{
+    font-family:var(--sans); font-size:.78rem; color:var(--ink-soft);
+    background:none; border:none; text-decoration:underline; cursor:pointer;
+    padding:.4rem .3rem;
+  }
+  .key-note{
+    font-family:var(--sans); font-size:.78rem; color:var(--ink-soft); margin:0;
+  }
+  .dot{ display:inline-block; width:.55em; height:.55em; border-radius:50%; margin-right:.3em; }
+  .dot.verified{ background:var(--c-evaluation); }
+  .dot.pending{ background:none; border:1.5px solid var(--ink-soft); }
+
+  /* ---------- Section dividers ---------- */
+  .section-head{
+    font-family:var(--mono);
+    font-size:.78rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:3.2rem 0 1.2rem;
+    padding-top:1.6rem;
+    border-top:1px solid var(--rule);
+  }
+  .section-head:first-of-type{ margin-top:0; }
+  .subloc{
+    font-family:var(--mono);
+    font-size:.72rem;
+    color:var(--ink-soft);
+    margin:1.8rem 0 .6rem;
+  }
+
+  /* ---------- Entry (text + margin note pair) ---------- */
+  .entry{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 320px;
+    gap:2.6rem;
+    align-items:start;
+    margin-bottom:1.9rem;
+    transition:opacity .2s;
+  }
+  .entry.dimmed{ opacity:.25; }
+  .text-col p{
+    margin:0 0 .9rem;
+    font-size:1.05rem;
+  }
+  .text-col p:last-child{ margin-bottom:0; }
+
+  .anchor{
+    position:relative;
+    cursor:pointer;
+    border-bottom:2px dotted var(--cat-color, var(--rubric));
+    padding-bottom:1px;
+  }
+  .anchor .mark{
+    font-family:var(--serif);
+    font-weight:600;
+    font-style:normal;
+    color:var(--cat-color, var(--rubric));
+    margin-left:.15em;
+    font-size:.9em;
+    vertical-align:super;
+  }
+  .anchor.flash{ background:#EFE0D2; }
+
+  @media (hover:hover){
+    .anchor:hover::after{
+      content:attr(data-preview);
+      position:absolute;
+      left:0; top:calc(100% + 8px);
+      width:min(300px, 60vw);
+      background:var(--ink);
+      color:var(--paper-card);
+      font-family:var(--sans);
+      font-size:.78rem;
+      line-height:1.4;
+      padding:.6rem .75rem;
+      border-radius:4px;
+      box-shadow:0 8px 22px rgba(0,0,0,.28);
+      z-index:30;
+    }
+    .anchor:hover::before{
+      content:"";
+      position:absolute;
+      left:14px; top:100%;
+      border:6px solid transparent;
+      border-bottom-color:var(--ink);
+      z-index:31;
+    }
+  }
+
+  /* ---------- Margin note ---------- */
+  .margin-col{ min-width:0; }
+  .note{
+    background:var(--paper-card);
+    border:1px solid var(--rule);
+    border-left:4px solid var(--cat-color, var(--rubric));
+    border-radius:2px;
+  }
+  .note-tab{
+    all:unset;
+    display:flex;
+    align-items:baseline;
+    gap:.5rem;
+    width:100%;
+    padding:.7rem .85rem;
+    cursor:pointer;
+    font-family:var(--sans);
+  }
+  .note-tab .m{
+    font-family:var(--serif);
+    font-weight:600;
+    color:var(--cat-color, var(--rubric));
+    font-size:1.05rem;
+    flex:none;
+  }
+  .note-title{
+    font-size:.85rem;
+    font-weight:500;
+    color:var(--ink);
+  }
+  .note-cat{
+    font-family:var(--mono);
+    font-size:.64rem;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:var(--cat-color, var(--rubric));
+    display:block;
+    margin-top:.15rem;
+  }
+  .note-toggle-icon{
+    margin-left:auto;
+    font-family:var(--mono);
+    color:var(--ink-soft);
+    font-size:.85rem;
+    flex:none;
+  }
+  .note-body{
+    display:none;
+    padding:0 .85rem .9rem;
+    font-family:var(--sans);
+  }
+  .note.is-open .note-body{ display:block; }
+  .note.is-open .note-toggle-icon::before{ content:"–"; }
+  .note:not(.is-open) .note-toggle-icon::before{ content:"+"; }
+  .note-body p{
+    font-size:.85rem;
+    color:var(--ink);
+    line-height:1.55;
+    margin:0 0 .7rem;
+  }
+  .sources{
+    list-style:none;
+    margin:0 0 .6rem;
+    padding:0;
+    border-top:1px solid var(--rule);
+    padding-top:.6rem;
+  }
+  .sources li{
+    font-size:.77rem;
+    line-height:1.5;
+    margin-bottom:.4rem;
+    padding-left:1.1rem;
+    position:relative;
+    color:var(--ink-soft);
+  }
+  .sources li::before{
+    content:"";
+    position:absolute; left:0; top:.5em;
+    width:.5em; height:.5em; border-radius:50%;
+  }
+  .sources li.verified::before{ background:var(--c-evaluation); }
+  .sources li.pending::before{ border:1.5px solid var(--ink-soft); }
+  .sources li a{ font-family:var(--mono); font-size:.74rem; }
+  .tagline{
+    font-family:var(--mono) !important;
+    font-size:.66rem !important;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:var(--ink-soft) !important;
+  }
+  .filenote{
+    font-family:var(--mono);
+    font-size:.66rem;
+    color:var(--rubric);
+    margin:0 0 .5rem !important;
+    text-transform:none !important;
+    letter-spacing:0 !important;
+  }
+
+  @media (max-width: 900px){
+    .entry{ grid-template-columns:1fr; gap:.9rem; }
+    .wrap{ padding:2.2rem 1.1rem 4rem; }
+  }
+
+  /* ---------- Footer ---------- */
+  footer{
+    max-width:800px;
+    margin-top:4rem;
+    padding-top:1.6rem;
+    border-top:1px solid var(--rule);
+    font-family:var(--sans);
+    font-size:.82rem;
+    color:var(--ink-soft);
+  }
+  footer p{ margin:0 0 .8rem; }
+
+  /* focus visibility */
+  .anchor:focus-visible, .note-tab:focus-visible, .legend-chip:focus-visible{
+    outline:2px solid var(--rubric);
+    outline-offset:2px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">Working reading copy — revised, priority set</p>
+    <h1>Expert-Guided PINN <em>read against its literature</em></h1>
+    <p class="dek">Gindullina, Lazutov, Stolyarov, Danilenko &amp; Leonenko (2026), <em>Expert Systems With Applications</em> 315:131730 — annotated with the 15 comparisons flagged as highest-priority out of the full 41-source corpus. Every one of the 15 has a thread here. Click a marked phrase or its margin note to open it; hover a phrase for a one-line preview.</p>
+    <p class="dek small">Order follows the paper itself, start to finish, so each thread sits where it's actually relevant rather than grouped by topic.</p>
+
+    <div class="legend" id="legend">
+      <button class="legend-chip" data-cat="reliability"><span class="m">¶</span> LLM Reliability</button>
+      <button class="legend-chip" data-cat="architecture"><span class="m">‡</span> Agent Architecture</button>
+      <button class="legend-chip" data-cat="alignment"><span class="m">⁂</span> Alignment / RLHF</button>
+      <button class="legend-chip" data-cat="formalization"><span class="m">†</span> Formalization &amp; Ontology</button>
+      <button class="legend-chip" data-cat="evaluation"><span class="m">§</span> Evaluation Epistemics</button>
+      <button class="legend-chip" data-cat="explanation"><span class="m">*</span> Explanation Theory</button>
+      <button class="legend-chip" data-cat="epixai"><span class="m">‖</span> Epi-XAI Pipeline</button>
+      <button class="legend-reset" id="resetFilter">show all threads</button>
+    </div>
+    <p class="key-note"><span class="dot verified"></span>linked and checked against a live source &nbsp;&nbsp; <span class="dot pending"></span>citation pending a manager pass</p>
+  </header>
+
+  <main>
+
+    <p class="section-head">1 · Introduction</p>
+
+    <section class="entry" data-cat="reliability" style="--cat-color:var(--c-reliability)">
+      <div class="text-col">
+        <p>The paper motivates its control mechanisms by naming a risk rather than classifying it: <span class="anchor" tabindex="0" data-target="n1" data-preview="A published faithfulness taxonomy already explains how epidemic-logic can pass while comment-compliance fails.">“direct use of LLM is associated with the risk of hallucinations Cossio (2025) – the generation of incorrect or physically unjustified code, which requires the development of strict control mechanisms.”<span class="mark">¶</span></span></p>
+      </div>
+      <aside class="margin-col">
+        <div class="note" id="n1">
+          <button class="note-tab" aria-expanded="false">
+            <span class="m">¶</span>
+            <span><span class="note-title">A named risk, now with a taxonomy</span><span class="note-cat">LLM Reliability</span></span>
+            <span class="note-toggle-icon"></span>
+          </button>
+          <div class="note-body">
+            <p class="filenote">08_alansari_survey_hallucination.md</p>
+            <p>Alansari &amp; Luqman's faithfulness taxonomy — instruction, context, and logical inconsistency — explains exactly how "compliance with epidemic logic" hits 90–100% while "compliance with the comment" sits at 6–27% in the same runs. The Fig. 4c case (quadrupling a boundary weight when growth was requested) is instruction inconsistency with locally coherent ODE penalties; the 700-day outbreak blends context and logical inconsistency. The survey's own mitigations — Structured CoT for code, semantic-entropy filtering across samples, HalluTree-style claim decomposition — are three concrete builds of the "LLM-loss-semantic-checker" the paper names but doesn't implement.</p>
+            <ul class="sources">
+              <li class="verified">Alansari &amp; Luqman (2025), <a class="src-link" href="https://arxiv.org/abs/2510.06265" target="_blank" rel="noopener">LLM Hallucination: A Comprehensive Survey — arXiv:2510.06265</a></li>
+            </ul>
+            <p class="tagline">Comparative inference</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="entry" data-cat="epixai" style="--cat-color:var(--c-epixai)">
+      <div class="text-col">
+        <p>Related work arrives at PINN as <span class="anchor" tabindex="0" data-target="n2" data-preview="A 26-study epi-XAI review flags PINNs as absent from the literature it surveyed — and names a six-stage pipeline this paper only touches at one stage.">“a promising direction... combining the advantages of both approaches”</span> — case-count compartmental models on one side, text-signal and neural approaches on the other.</p>
+      </div>
+      <aside class="margin-col">
+        <div class="note" id="n2">
+          <button class="note-tab" aria-expanded="false">
+            <span class="m">‖</span>
+            <span><span class="note-title">A training-time patch on top of a five-stage gap</span><span class="note-cat">Epi-XAI Pipeline</span></span>
+            <span class="note-toggle-icon"></span>
+          </button>
+          <div class="note-body">
+            <p class="filenote">05_towardsImprovedXaiBasedEpidemiologicalResearch.md</p>
+            <p>Khalili &amp; Wimmer's PRISMA review of 26 epidemiology+XAI studies proposes a six-stage pipeline — preprocessing, feature engineering, tuning, training, evaluation, explanation — and explicitly flags PINNs as absent from the reviewed literature, naming them for future work this paper is an early instance of. But nearly all of its expert intervention happens at one stage (training, via the loss penalty), leaving data preprocessing, NPI feature engineering, and uncertainty quantification untouched — consistent with the review's broader thesis that pipeline-stage omissions, not any single weak component, are what caps systems like this below deployment readiness.</p>
+            <ul class="sources">
+              <li class="pending">Khalili &amp; Wimmer (2024), Towards Improved XAI-Based Epidemiological Research into the Next Potential Pandemic</li>
+            </ul>
+            <p class="tagline">Comparative inference</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="entry" data-cat="architecture" style="--cat-color:var(--c-architecture)">
+      <div class="text-col">
+        <p>The paper states its central claim plainly: <span class="anchor" tabindex="0" data-target="n3" data-preview="A near-identical loop for simulation code found that judging your own generated code by conjecture fails; judging the resulting trajectory works.">“A key contribution of this study is an interactive framework that instantiates an expert-in-the-loop optimization cycle.”<span class="mark">‡</span></span></p>
+      </div>
+      <aside class="margin-col">
+        <div class="note" id="n3">
+          <button class="note-tab" aria-expanded="false">
+            <span class="m">‡</span>
+            <span><span class="note-title">Lab-in-the-loop: validate the trajectory, not the conjecture</span><span class="note-cat">Agent Architecture</span></span>
+            <span class="note-toggle-icon"></span>
+          </button>
+          <div class="note-body">
+            <p class="filenote">04_moeltner_lab_in_the_loop.md</p>
+            <p>Möltner et al. build the same expert-comment-to-simulation-code loop for multibody dynamics and tested two validation strategies: the LLM judging its own generated code by conjecture (abandoned — "largely erroneous results, ... disconnect between the generation of the conjecture and the actual simulation model") versus running the actual simulation and having a separate LLM call judge the numerical trajectory ("significantly more reliable"). The PINN Customizer currently does the abandoned version — one LLM invents the loss weights and implicitly judges plausibility, with no trajectory audit before the expert sees the plot — exactly the gap that let the 700-day outbreak compile cleanly.</p>
+            <ul class="sources">
+              <li class="pending">Möltner et al. (2026), Creation, Evaluation and Self-Validation of Simulation Models with LLMs</li>
+            </ul>
+            <p class="tagline">Comparative inference</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <p class="section-head">2 · Methodology</p>
+
+    <section class="entry" data-cat="evaluation" style="--cat-color:var(--c-evaluation)">
+      <div class="text-col">
+        <p>The framework's core is described as <span class="anchor" tabindex="0" data-target="n4" data-preview="This decomposition already is a statistical position — it just isn't named as one.">“the optimization of a composite loss function that includes both the data-fitting error and the residual of the equations describing the modeled process.”<span class="mark">§</span></span></p>
+      </div>
+      <aside class="margin-col">
+        <div class="note" id="n4">
+          <button class="note-tab" aria-expanded="false">
+            <span class="m">§</span>
+            <span><span class="note-title">Naming the statistics already being done</span><span class="note-cat">Evaluation Epistemics</span></span>
+            <span class="note-toggle-icon"></span>
+          </button>
+          <div class="note-body">
+            <p class="filenote">12_lin_frequentist_or_bayesian.md</p>
+            <p>Lin's contextualist-centrism spectrum gives formal vocabulary for what this decomposition already does without naming it: $L_{data}$ is likelihood/frequentist pressure, the LLM-generated expert penalty is a subjective structural prior, and the epidemic-logic/MAE checks are frequentist filters on a process that is neither pure Bayesian nor pure frequentist. Read this way, edits that are "effectively random rather than logically justified" are Lin's bad-prior pathology in a nonparametric weight space — and the planned class-subclass templates are, in Lin's terms, a search for an admissible, coherent prior family.</p>
+            <ul class="sources">
+              <li class="pending">Lin (2024), To Be a Frequentist or Bayesian?</li>
+            </ul>
+            <p class="tagline">Comparative inference</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="entry" data-cat="architecture" style="--cat-color:var(--c-architecture)">
+      <div class="text-col">
+        <p>The system is laid out as four components, the last of which is <span class="anchor" tabindex="0" data-target="n5" data-preview="This is the exact 'Single-Shot' configuration a hardware-codegen agent tested as its weakest baseline — and it failed every test case.">“LLM that translates a comment into executable code for a loss function satisfying given constraints.”<span class="mark">‡</span></span></p>
+      </div>
+      <aside class="margin-col">
+        <div class="note" id="n5">
+          <button class="note-tab" aria-expanded="false">
+            <span class="m">‡</span>
+            <span><span class="note-title">Single-shot is the baseline this architecture was built to beat</span><span class="note-cat">Agent Architecture</span></span>
+            <span class="note-toggle-icon"></span>
+          </button>
+          <div class="note-body">
+            <p class="filenote">03_yu_2025_spec2rtl_agent.md</p>
+            <p>One prompt, one LLM call, a full code artifact in a single pass is exactly the "Single-Shot" configuration Yu et al. test as their weakest baseline for hardware codegen — and it fails all three of their test cases outright. Their working alternative — pseudocode → Python → C++ with a Coder/Verifier pair at each stage, plus a four-branch Reflection agent that can reopen the original instructions rather than just regenerate code — is a tested architecture for the exact gap this paper names but doesn't build. Their ablations (removing Understanding, Reflection, or progressive coding one at a time) are also the controlled experiment this paper's three-model comparison never runs: it can separate model from architecture; the PINN Customizer can't.</p>
+            <ul class="sources">
+              <li class="pending">Yu et al. (2025), Spec2RTL-Agent: Automated Hardware Code Generation from Complex Specifications</li>
+            </ul>
+            <p class="tagline">Comparative inference</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <p class="subloc">§2.2 Hierarchical Text Classifier</p>
+
+    <section class="entry" data-cat="explanation" style="--cat-color:var(--c-explanation)">
+      <div class="text-col">
+        <p>After the classifier proposes a class and subclass, the expert confirms before anything is trained: <span class="anchor" tabindex="0" data-target="n6" data-preview="The paper's successful example is already a textbook contrastive explanation — the system just doesn't ask for the foil explicitly.">“This approach implements a split-responsibility model, where the model performs the initial segmentation of the input data, and the final decision is made by an expert.”<span class="mark">*</span></span></p>
+      </div>
+      <aside class="margin-col">
+        <div class="note" id="n6">
+          <button class="note-tab" aria-expanded="false">
+            <span class="m">*</span>
+            <span><span class="note-title">The expert already asks contrastive questions — the system doesn't ask back</span><span class="note-cat">Explanation Theory</span></span>
+            <span class="note-toggle-icon"></span>
+          </button>
+          <div class="note-body">
+            <p class="filenote">13_explanationInArtificialIntelligence.md</p>
+            <p>Miller's survey argues people explain contrastively — fact versus foil, "why P rather than Q" — and socially, not via full causal dumps. The paper's successful example ("after the peak there should be a sharper decline") is already exactly this structure, with Table A.2 targeting only the difference, not a full rewrite. The gap Miller predicts and the paper's own failures confirm: foils are often implicit, and when the Conversational Agent doesn't elicit one explicitly, the LLM guesses wrong — the peak-shift request that produced the 700-day outbreak.</p>
+            <ul class="sources">
+              <li class="verified">Miller (2019), <a class="src-link" href="https://doi.org/10.1016/j.artint.2018.07.007" target="_blank" rel="noopener">Explanation in AI: Insights from the Social Sciences — doi:10.1016/j.artint.2018.07.007</a></li>
+            </ul>
+            <p class="tagline">Comparative inference</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="entry" data-cat="formalization" style="--cat-color:var(--c-formalization)">
+      <div class="text-col">
+        <p>The confirmed class/subclass pulls rules from a fixed knowledge base: <span class="anchor" tabindex="0" data-target="n7" data-preview="An ontology architecture from 1993 solved this exact translation problem — with a canonical intermediate form this paper's rules skip.">“These rules... represent strict guidelines for LLM, defining which components of the original loss function can be modified... and which are prohibited.”<span class="mark">†</span></span></p>
+      </div>
+      <aside class="margin-col">
+        <div class="note" id="n7">
+          <button class="note-tab" aria-expanded="false">
+            <span class="m">†</span>
+            <span><span class="note-title">A content ontology without a representation ontology</span><span class="note-cat">Formalization &amp; Ontology</span></span>
+            <span class="note-toggle-icon"></span>
+          </button>
+          <div class="note-body">
+            <p class="filenote">11_gruber_ontolingua_portable_ontology.md</p>
+            <p>Gruber's 1993 Ontolingua work solved the identical translation problem three decades early — expressive declarative knowledge (KIF) into restricted executable targets (Loom, Epikit, KEE) — via idiom recognition into a canonical Frame Ontology, then deterministic back-end translators, with no step left to free generation. This paper built the first layer (a four-class comment hierarchy) but skipped the second: "add penalty to term2" is natural-language documentation, not a machine-readable idiom with typed operators and ranges — precisely why two different models can both "honor" the same rule and produce opposite forecasts (weakening vs. quadrupling the same boundary term).</p>
+            <ul class="sources">
+              <li class="pending">Gruber (1993), A Translation Approach to Portable Ontology Specifications</li>
+            </ul>
+            <p class="tagline">Comparative inference</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <p class="subloc">§2.3 PINN Customizer</p>
+
+    <section class="entry" data-cat="reliability" style="--cat-color:var(--c-reliability)">
+      <div class="text-col">
+        <p>Validation is described in two steps: <span class="anchor" tabindex="0" data-target="n8" data-preview="84% of incorrect solutions in a benchmark study still compile — the compiler catches only a minority of the errors that matter.">“Syntactic analysis – checking the code's compilability using the Python interpreter. Iterative correction – if compilation errors are detected, the system automatically generates a clarifying request to LLM.”<span class="mark">¶</span></span></p>
+      </div>
+      <aside class="margin-col">
+        <div class="note" id="n8">
+          <button class="note-tab" aria-expanded="false">
+            <span class="m">¶</span>
+            <span><span class="note-title">The compiler catches the minority of errors</span><span class="note-cat">LLM Reliability</span></span>
+            <span class="note-toggle-icon"></span>
+          </button>
+          <div class="note-body">
+            <p class="filenote">02_wang_code_generation_errors.md</p>
+            <p>Wang et al.'s empirical study of HumanEval failures found that 84.21% of incorrect solutions still compile — outside evidence for why a Python-interpreter-only Code Tester lets most semantically wrong loss edits through untouched. Their taxonomy names failures this paper's own error list matches almost line for line: "Garbage Code" (unused variables/constants), "Constant Value Error" (literal numeric insertion, worse in larger models — matching Llama-70B's behavior), and errors needing multi-hunk repair, not single-line fixes. Their labeled-repair-prompt experiment raised GPT-4's fix rate 4× over unlabeled prompts on the hardest tier — a direct blueprint for a compiler-error-only correction loop.</p>
+            <ul class="sources">
+              <li class="pending">Wang et al. (2025), Towards Understanding the Characteristics of Code Generation Errors Made by LLMs</li>
+            </ul>
+            <p class="tagline">Comparative inference</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <p class="subloc">§2.4 Evaluation Approach</p>
+
+    <section class="entry" data-cat="evaluation" style="--cat-color:var(--c-evaluation)">
+      <div class="text-col">
+        <p>The paper is candid about why it built four qualitative thresholds instead of one metric: <span class="anchor" tabindex="0" data-target="n9" data-preview="Verification is the wrong goal for open natural-system models — and the paper's own multiple-loss-edits-same-plot pattern is exactly the underdetermination this predicts.">“Due to the lack of standardized numerical metrics for assessing the semantic correspondence of a forecast to an expert's textual commentary, a system of qualitative validation criteria was developed.”<span class="mark">§</span></span></p>
+      </div>
+      <aside class="margin-col">
+        <div class="note" id="n9">
+          <button class="note-tab" aria-expanded="false">
+            <span class="m">§</span>
+            <span><span class="note-title">Confirmation, not verification</span><span class="note-cat">Evaluation Epistemics</span></span>
+            <span class="note-toggle-icon"></span>
+          </button>
+          <div class="note-body">
+            <p class="filenote">06_oreskes_verification_validation.md</p>
+            <p>Oreskes et al.'s classic argument — verification/validation of open natural-system models is logically impossible, only partial confirmation is available, and "a faulty model may appear to be correct" — reframes these four thresholds as confirmation heuristics, a more defensible stance than the abstract's language of "confirming feasibility." Multiple loss edits at temperature=1.0 producing visually similar curves with different physics is exactly Oreskes's non-uniqueness/underdetermination point, empirically demonstrated in the paper's own run-to-run variance.</p>
+            <ul class="sources">
+              <li class="verified">Oreskes, Shrader-Frechette &amp; Belitz (1994), <a class="src-link" href="https://doi.org/10.1126/science.263.5147.641" target="_blank" rel="noopener">Verification, Validation and Confirmation... — doi:10.1126/science.263.5147.641</a></li>
+            </ul>
+            <p class="tagline">Comparative inference</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="entry" data-cat="evaluation" style="--cat-color:var(--c-evaluation)">
+      <div class="text-col">
+        <p>The fourth criterion is named as the one that matters most: <span class="anchor" tabindex="0" data-target="n10" data-preview="A formal framework for exactly this kind of patch already exists, with four scoreable properties instead of a visual read.">“Compliance with the comment. This is the primary criterion for assessing the technical success of the modification system.”<span class="mark">§</span></span></p>
+      </div>
+      <aside class="margin-col">
+        <div class="note" id="n10">
+          <button class="note-tab" aria-expanded="false">
+            <span class="m">§</span>
+            <span><span class="note-title">A patch without an explanation is still soliloquy</span><span class="note-cat">Evaluation Epistemics</span></span>
+            <span class="note-toggle-icon"></span>
+          </button>
+          <div class="note-body">
+            <p class="filenote">07_chakraborti_model_reconciliation.md</p>
+            <p>Chakraborti et al.'s Model Reconciliation framework formalizes exactly what "compliance with the comment" is trying to measure informally: whether a plan — here, the modified forecast — is optimal in the human's updated mental model, scored against four named properties: completeness, conciseness, monotonicity, computability. Table A.2's "add penalty to term2, other components prohibited" is a Plan Patch Explanation in their terms — it names where to edit, not why that edit reconciles the expert's mental model with the PINN's, which is exactly why the 700-day outbreak stays inexplicable to the expert even after it compiles.</p>
+            <ul class="sources">
+              <li class="verified">Chakraborti, Sreedharan, Zhang &amp; Kambhampati (2017), <a class="src-link" href="https://arxiv.org/abs/1701.08317" target="_blank" rel="noopener">Plan Explanations as Model Reconciliation — arXiv:1701.08317</a></li>
+            </ul>
+            <p class="tagline">Comparative inference</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="entry" data-cat="architecture" style="--cat-color:var(--c-architecture)">
+      <div class="text-col">
+        <p>The scaling experiment is explicit about its one variable: <span class="anchor" tabindex="0" data-target="n11" data-preview="A 7B model given LoRA fine-tuning, few-shot examples, and grammar-constrained decoding reached 84.5% on a structurally identical task — the small model here got none of those three tools.">“To empirically evaluate the impact of model scale on the quality of expert comment interpretation... three models with different parameter sizes were selected.”<span class="mark">‡</span></span></p>
+      </div>
+      <aside class="margin-col">
+        <div class="note" id="n11">
+          <button class="note-tab" aria-expanded="false">
+            <span class="m">‡</span>
+            <span><span class="note-title">The small model was never given a fair fight</span><span class="note-cat">Agent Architecture</span></span>
+            <span class="note-toggle-icon"></span>
+          </button>
+          <div class="note-body">
+            <p class="filenote">01_kreikemeyer_2025_llm_reaction_networks.md</p>
+            <p>Kreikemeyer et al. solve the same shape of problem — free text to formal DSL, for chemical reaction networks — and get a 7B model to 84.5% accuracy (vs. 99% for GPT-4o) using three tools Llama-3.1-8B never receives here: LoRA fine-tuning on a synthetic corpus, curated few-shot examples, and optional grammar-constrained decoding. Their own "raw" 8B baseline, given only good few-shot examples, reaches 72.5% — roughly twelve times the 6% reported here for the same size class. That reframes the 8B collapse from "a limit of scale" into an artifact of testing every model size with identical, unaided prompting.</p>
+            <ul class="sources">
+              <li class="pending">Kreikemeyer et al. (2025), Using (Not-So) Large Language Models to Generate Simulation Models in a Formal DSL</li>
+            </ul>
+            <p class="tagline">Comparative inference</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="entry" data-cat="reliability" style="--cat-color:var(--c-reliability)">
+      <div class="text-col">
+        <p>Every model was tested at maximum sampling variance: <span class="anchor" tabindex="0" data-target="n12" data-preview="Higher temperature is directly tied to hallucination risk — and the multiple samples this already produces are a free reward-model dataset, currently discarded.">“All LLMs were set to a temperature of 1.0 to achieve maximum variation in results even when entering the same comment.”<span class="mark">¶</span></span></p>
+      </div>
+      <aside class="margin-col">
+        <div class="note" id="n12">
+          <button class="note-tab" aria-expanded="false">
+            <span class="m">¶</span>
+            <span><span class="note-title">Prototyping at maximum entropy, deployed at low temperature</span><span class="note-cat">LLM Reliability</span></span>
+            <span class="note-toggle-icon"></span>
+          </button>
+          <div class="note-body">
+            <p class="filenote">09_huang_survey_hallucination.md</p>
+            <p>Huang et al.'s survey ties elevated sampling temperature directly to hallucination risk: more uniform token distributions increase tail-token sampling, exactly the mechanism behind the paper's own catalog of spurious variables and broken physics at T=1.0. Two of the survey's cited mitigations map onto data already produced at no extra cost: self-consistency scoring across the multiple T=1.0 samples per comment (currently discarded after one is shown to the expert), and LMvLM-style cross-examination — an examiner LLM questioning the generator — as a working instantiation of the paper's own proposed "LLM-expert-evaluator."</p>
+            <ul class="sources">
+              <li class="pending">Huang et al. (2024), A Survey on Hallucination in Large Language Models</li>
+            </ul>
+            <p class="tagline">Comparative inference</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <p class="section-head">3 · Results and Discussion</p>
+    <p class="subloc">§3.3 Working with the framework</p>
+
+    <section class="entry" data-cat="alignment" style="--cat-color:var(--c-alignment)">
+      <div class="text-col">
+        <p>Every outcome is sorted into one of three tiers: <span class="anchor" tabindex="0" data-target="n13" data-preview="This three-level rating, over multiple sampled candidates, is already two of the three ingredients a reward-model dataset needs.">“Successful result... Unsuccessful result... Ambiguous result. The expert's requirements are formally satisfied, but the result is questionable.”<span class="mark">⁂</span></span></p>
+      </div>
+      <aside class="margin-col">
+        <div class="note" id="n13">
+          <button class="note-tab" aria-expanded="false">
+            <span class="m">⁂</span>
+            <span><span class="note-title">The reward-model dataset already exists — it's being discarded</span><span class="note-cat">Alignment / RLHF</span></span>
+            <span class="note-toggle-icon"></span>
+          </button>
+          <div class="note-body">
+            <p class="filenote">15_ouyang_2022_instructgpt.md</p>
+            <p>InstructGPT's core finding is that a model bigger at pretraining but never aligned to instructions loses to a much smaller aligned one — a near match for DeepSeek-V3.1 (671B) topping out at 27% compliance while Ouyang et al.'s 1.3B aligned model beat 175B raw GPT-3. Two of the three ingredients their reward-model training needs already exist here: multiple candidate loss edits per comment (from T=1.0 sampling) and a three-level expert verdict that is a ready-made ordinal preference signal. The only missing step is saving every candidate and its verdict instead of keeping one and discarding the rest — turning 20-launch prototyping data into training data for the fine-tuned generator the paper doesn't yet have.</p>
+            <ul class="sources">
+              <li class="verified">Ouyang et al. (2022), <a class="src-link" href="https://arxiv.org/abs/2203.02155" target="_blank" rel="noopener">Training LMs to Follow Instructions (InstructGPT) — arXiv:2203.02155</a></li>
+            </ul>
+            <p class="tagline">Comparative inference · speculative extension</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <p class="section-head">4 · Limitations and Future Work</p>
+
+    <section class="entry" data-cat="formalization" style="--cat-color:var(--c-formalization)">
+      <div class="text-col">
+        <p>The rule system is named directly as a weak point: <span class="anchor" tabindex="0" data-target="n14" data-preview="A controlled hyper-heuristic experiment found linear rule representations beat hierarchical ones on 7 of 8 benchmarks — this paper declares linear rules but hands the LLM full hierarchical freedom.">“The current system of rules for modifying loss functions lacks sufficient detail to provide meaningful control over the generation process.”<span class="mark">†</span></span></p>
+      </div>
+      <aside class="margin-col">
+        <div class="note" id="n14">
+          <button class="note-tab" aria-expanded="false">
+            <span class="m">†</span>
+            <span><span class="note-title">Before writing templates, test which representation wins</span><span class="note-cat">Formalization &amp; Ontology</span></span>
+            <span class="note-toggle-icon"></span>
+          </button>
+          <div class="note-body">
+            <p class="filenote">10_burke_heuristic_combination_structure.md — filed under "Burke" in the corpus; the actual source is Pillay (2010)</p>
+            <p>Pillay's controlled hyper-heuristic experiment found linear, sequential rule representations beat hierarchical, simultaneously-applied ones on 7 of 8 exam-timetabling benchmarks, and cost far less to search. Table A.2 declares flat, linear rules but hands the LLM free-form Python generation — full hierarchical expressiveness with none of the sequential structure Pillay's result favors. Before building the class-subclass templates already proposed as future work, Pillay's protocol argues for running the same linear-vs-hierarchical ablation on the paper's own 20 comments, rather than picking a representation by default.</p>
+            <ul class="sources">
+              <li class="pending">Pillay (2010), An Empirical Study into the Structure of Heuristic Combinations in an EA Hyper-Heuristic for Examination Timetabling</li>
+            </ul>
+            <p class="tagline">Comparative inference</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="entry" data-cat="explanation" style="--cat-color:var(--c-explanation)">
+      <div class="text-col">
+        <p>The final self-assessment is unusually candid: <span class="anchor" tabindex="0" data-target="n15" data-preview="A classic XAI critique argues researchers evaluate explanatory systems for themselves, not their intended users — and this evaluation setup matches that pattern closely.">“The proposed approach to evaluating results has a significant subjective component, particularly in the 'Compliance with the comment' criterion.”<span class="mark">*</span></span></p>
+      </div>
+      <aside class="margin-col">
+        <div class="note" id="n15">
+          <button class="note-tab" aria-expanded="false">
+            <span class="m">*</span>
+            <span><span class="note-title">Evaluating for researchers, not for epidemiologists</span><span class="note-cat">Explanation Theory</span></span>
+            <span class="note-toggle-icon"></span>
+          </button>
+          <div class="note-body">
+            <p class="filenote">14_bewareOfInmates_doYouGetIt_howFutureDepends.md — Miller, Broekens &amp; Longo, read together</p>
+            <p>Miller's "inmates running the asylum" critique — that AI researchers build explanatory systems evaluated by researchers, not intended users — matches the MAE thresholds, n=20, T=1.0, and author-judged compliance here almost point for point. Broekens' empirically supported finding that different action types need different explanations gives a concrete fix: type the reverse explanation by comment class ("because you cited containment timing") rather than showing only a code diff. Longo's physics-versus-biology argument reframes the whole exercise usefully: epidemic policy shifts reshape the effective phase space rather than adding noise inside a fixed SIRD manifold — a stronger, less apologetic reason expert intervention is necessary at all, not a workaround for a model that should otherwise stand alone.</p>
+            <ul class="sources">
+              <li class="pending">Miller et al., Beware of Inmates Running the Asylum</li>
+              <li class="pending">Broekens et al., Do You Get It? User-Evaluated Explainable BDI Agents</li>
+              <li class="pending">Longo, How the Future Depends on the Past and Rare Events in Systems of Life</li>
+            </ul>
+            <p class="tagline">Comparative inference</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>All 15 comparisons flagged as highest-priority are represented above, each anchored to the specific sentence in the paper it speaks to most directly, in reading order. Files: 01 Kreikemeyer · 02 Wang · 03 Yu · 04 Möltner · 05 Khalili &amp; Wimmer · 06 Oreskes · 07 Chakraborti · 08 Alansari · 09 Huang · 10 Pillay (filed as "Burke") · 11 Gruber · 12 Lin · 13 Miller · 14 Miller/Broekens/Longo · 15 Ouyang.</p>
+    <p>Threads from the broader 41-source corpus that aren't in this priority set (complex-systems framing, epidemiology-adjacent alternative models, and the general explanation-theory cluster beyond Miller) are left out here to keep focus on the fifteen selected — see <em>expert_guided_pinn_bridge_map.md</em> for those.</p>
+    <p>Links marked with a filled dot were checked against a live source while building this page; open-dot citations are carried from the comparison corpus as-is and want a citation-manager pass before anything goes into a submission.</p>
+  </footer>
+
+</div>
+
+<script>
+  document.querySelectorAll('.note-tab').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var note = btn.closest('.note');
+      var open = note.classList.toggle('is-open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  });
+
+  document.querySelectorAll('.anchor').forEach(function(anchor){
+    function activate(){
+      var note = document.getElementById(anchor.dataset.target);
+      if (!note) return;
+      if (!note.classList.contains('is-open')){
+        note.querySelector('.note-tab').click();
+      }
+      note.scrollIntoView({behavior:'smooth', block:'center'});
+      anchor.classList.add('flash');
+      setTimeout(function(){ anchor.classList.remove('flash'); }, 900);
+    }
+    anchor.addEventListener('click', activate);
+    anchor.addEventListener('keydown', function(e){
+      if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); activate(); }
+    });
+  });
+
+  var chips = Array.prototype.slice.call(document.querySelectorAll('.legend-chip'));
+  var active = null;
+  chips.forEach(function(chip){
+    chip.addEventListener('click', function(){
+      var cat = chip.dataset.cat;
+      active = (active === cat) ? null : cat;
+      chips.forEach(function(c){ c.classList.toggle('active', c.dataset.cat === active); });
+      document.querySelectorAll('.entry').forEach(function(entry){
+        entry.classList.toggle('dimmed', !!active && entry.dataset.cat !== active);
+      });
+    });
+  });
+  document.getElementById('resetFilter').addEventListener('click', function(){
+    active = null;
+    chips.forEach(function(c){ c.classList.remove('active'); });
+    document.querySelectorAll('.entry').forEach(function(entry){ entry.classList.remove('dimmed'); });
+  });
+</script>
+</body>
+</html>
