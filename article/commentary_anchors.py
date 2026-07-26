@@ -70,102 +70,102 @@ ANCHOR_TEXTS: dict[str, str] = {
         'particularly in the "Compliance with the comment" criterion.'
     ),
     "n16": (
-        "Wei et al. (2024/25). DANTE: Deep active optimization for complex systems."
+        'After successfully generating a syntactically correct loss function, the module initiates the process of further training of PINN'
     ),
     "n17": (
-        "Bradley-Terry Thinking Reward Model, которая разделяет «следование инструкции» и «точность прогноза»."
+        'For the confirmed class and subclass combination, the corresponding loss function modification rules are extracted from the knowledge base. These rules, provided in Appendix A, represent strict guidelines for LLM, defining which components of the original loss function can be modified (e.g., by adding a penalty term) and which are prohibited.'
     ),
     "n18": (
-        "Согласно Zhang et al. (2026, TRM), эта проблема решается через Bradley-Terry Thinking Reward Model"
+        'An LLM-loss-semantic-checker could verify alignment between the generated code and modification rules, reducing hallucinations.'
     ),
     "n19": (
-        "Согласно Eftimov & Korošec (2019, eDSC), для таких распределений необходимы непараметрические тесты"
+        'It is crucial to note that the successful model modification via external input does not mean the quality or correctness of the expert’s suggestion itself'
     ),
     "n20": (
-        "теория Malan (2021) и Daza (2016) показывает, что это классические «патологии сопряженных ландшафтов»."
+        'The conversational agent’s functionality includes validating expert comments for compliance with the following criteria: concreteness (a single specific point), certainty (lack of vagueness), and objectivity (lack of emotional overtones).'
     ),
     "n21": (
-        "отсутствие формальной онтологии (competency questions) делает базу правил (Appendix A) хрупкой и труднорасширяемой."
+        'After successfully generating a syntactically correct loss function, the module initiates the process of further training of PINN'
     ),
     "n22": (
-        "Ma et al. (2023). Eureka. Генерация reward-функций как кода (базис метода)."
+        'our analysis identified a subset of instances (15–28%) (Figure 5 ) where adapting the loss function did not yield a meaningful divergence from the original forecast.'
     ),
     "n23": (
-        "Miller (2020). Contrastive Explanation. Оценка успеха через контраст"
+        'The current system of rules for modifying loss functions lacks sufficient detail to provide meaningful control over the generation process.'
     ),
     "n24": (
-        "Hidalgo et al. (2018). Glucose Prognosis by Grammatical Evolution. Использование грамматик (DSL) для ограничения LLM."
+        'We conducted a Nemenyi post-hoc test, which revealed that Meta-Llama-3.1-8B-Instruct, unlike Llama-3.3-70B-Instruct, generates functions that deviate more significantly from the original. This correlates with the empirical observation that 50% of its output fails compilation (Figure 3), suggesting that the increased syntactic incorrectness is due to more aggressive source code modification. Differences between all other pairs of models were statistically insignificant.'
     ),
     "n25": (
-        "Noy & McGuinness (2001). Ontology Development 101. Методология построения иерархии классов"
+        'Simplifying the interaction between the operator and the mathematical model could substantially broaden the use of forecasting in epidemiological practice'
     ),
     "n26": (
-        "Malek (2009). Meta-Heuristic Collaboration in a MAS. Архитектура для Future Work"
+        'A key contribution of this study is an interactive framework that instantiates an expert-in-the-loop optimization cycle. The process begins with an expert’s qualitative assessment of a forecast, which is translated into a structured specification for loss function modification.'
     ),
     "n27": (
-        "Halpern & Pearl (2005). Causes and Explanations. Формальная база для проверки того, является ли правка LLM"
+        "A key contribution of this study is an interactive framework that instantiates an expert-in-the-loop optimization cycle. The process begins with an expert's qualitative assessment of a forecast, which is translated into a structured specification for loss function modification."
     ),
     "n28": (
-        "The current study is limited by the lack of mechanisms to control the interpretability of the generated loss functions."
+        'A significant limitation is the lack of mechanisms to control the interpretability of the generated loss functions. The current rule system (Appendix A), based on specifying the target components of the loss function for modification, is insufficient to ensure semantic transparency and explainability of the changes made.'
     ),
     "n29": (
-        "Longo, How the Future Depends on the Past and Rare Events in Systems of Life"
+        'we plan to replace the simple penalty additions by class-subclass-specific modification templates. These templates will explicitly define which loss components and parameters can be altered, which mathematical operators are admissible, and what numerical ranges are permitted.'
     ),
     "n30": (
-        "Broekens et al., Do You Get It? User-Evaluated Explainable BDI Agents"
+        'The Meta-Llama-3.1-8B-Instruct model demonstrated lower compliance with comments (Figure 5).'
     ),
     "n31": (
-        "Miller et al., Beware of Inmates Running the Asylum"
+        'The defining characteristic of the PINN methodology is the optimization of a composite loss function that includes both the data-fitting error and the residual of the equations describing the modeled process. In the context of epidemiological forecasting, the PINN loss function typically includes components corresponding to the observed data, the differential equations of the SIR model and its extensions (e.g., SEIR, SIRD), and the initial/boundary conditions.'
     ),
     "n32": (
-        "Pillay (2010), An Empirical Study into the Structure of Heuristic Combinations"
+        'The defining characteristic of the PINN methodology is the optimization of a composite loss function that includes both the data-fitting error and the residual of the equations describing the modeled process.'
     ),
     "n33": (
-        "Huang et al. (2024), A Survey on Hallucination in Large Language Models"
+        'A promising direction is to evolve the system toward a multi-agent architecture, where specialized LLMs enhance autonomy and objectivity. An LLM-expert-evaluator could quantify forecast compliance with the original comment; low confidence scores could trigger automatic loss regeneration or comment refinement. An LLM-loss-semantic-checker could verify alignment between the generated code and modification rules, reducing hallucinations.'
     ),
     "n34": (
-        "Kreikemeyer et al. (2025), Using (Not-So) Large Language Models to Generate Simulation Models"
+        'we used a PINN’s architecture based on the SIRD model equations from Abramova and Leonenko (2024)'
     ),
     "n35": (
-        "Wang et al. (2025), Towards Understanding the Characteristics of Code Generation Errors"
+        'The current system of rules for modifying loss functions lacks sufficient detail to provide meaningful control over the generation process.'
     ),
     "n36": (
-        "Gruber (1993), A Translation Approach to Portable Ontology Specifications"
+        'The proposed approach to evaluating results has a significant subjective component, particularly in the "Compliance with the comment" criterion. The lack of formalized metrics for measuring the semantic correspondence between the comment and the forecast limits the objectivity of the results.'
     ),
     "n37": (
-        "Yu et al. (2025), Spec2RTL-Agent: Automated Hardware Code Generation"
+        'The model, based on "bert-base-cased", was fine-tuned on a synthetic dataset of 2000 expert-like commentaries. This dataset was generated by DeepSeek-V3.1 using real expert comments to ensure representativeness'
     ),
     "n38": (
-        "Lin (2024), To Be a Frequentist or Bayesian?"
+        'Due to the lack of standardized numerical metrics for assessing the semantic correspondence of a forecast to an expert’s textual commentary, a system of qualitative validation criteria was developed.'
     ),
     "n39": (
-        "Möltner et al. (2026), Creation, Evaluation and Self-Validation of Simulation Models with LLMs"
+        'After automatic classification, the expert confirms the correctness of the assigned class and subclass.'
     ),
     "n40": (
-        "Khalili & Wimmer (2024), Towards Improved XAI-Based Epidemiological Research"
+        'A value of 1100 was empirically chosen as the threshold for successfully meeting this criterion, using the MAE (Mean Absolute Error) metric.'
     ),
     "n41": (
-        "The interaction with the framework proceeds through the following steps:"
+        'These templates will explicitly define which loss components and parameters can be altered, which mathematical operators are admissible, and what numerical ranges are permitted.'
     ),
     "n42": (
-        "The analysis was conducted on daily and cumulative incidence data"
+        'The current rule system (Appendix A), based on specifying the target components of the loss function for modification, is insufficient to ensure semantic transparency and explainability of the changes made.'
     ),
     "n43": (
-        "We hypothesize that discrepancies between the forecast and training data (Figure 5)"
+        'The hierarchical classifier was trained and evaluated on synthetic data, which may not capture the full linguistic variability of real expert feedback. Large-scale validation on authentic expert comments is planned for future work at the Smorodintsev Research Institute for Influenza.'
     ),
     "n44": (
-        "A promising direction is to evolve the system toward a multi-agent architecture"
+        'The loop is closed by presenting the refined forecast to the expert, enabling continuous model alignment with domain knowledge.'
     ),
     "n45": (
-        "Experience with operational forecasting indicates the need for periodic calibration"
+        'If the forecast is unsatisfactory, the expert enters a textual comment in the “Instructions for the model” field.'
     ),
     "n46": (
-        "The impact of operator competence and their understanding of how large language models function"
+        'The defining characteristic of the PINN methodology is the optimization of a composite loss function that includes both the data-fitting error and the residual of the equations describing the modeled process.'
     ),
     "n47": (
-        "This study presents an initial step in this direction in the form of the experimental Expert-Guided PINN framework"
+        'the epidemic curve retains a plausible shape but exhibits an unrealistically long outbreak duration (more than 700 days).'
     ),
     "n48": (
-        "The define characteristic of the PINN methodology is the optimization of a composite loss function"
+        'An LLM-expert-evaluator could quantify forecast compliance with the original comment; low confidence scores could trigger automatic loss regeneration or comment refinement.'
     ),
 }

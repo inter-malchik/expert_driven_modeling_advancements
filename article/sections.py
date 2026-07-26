@@ -118,6 +118,7 @@ CATEGORY_COLORS = {
     "epixai": "#8A5A3F",
     "optimization": "#2E8B57",
     "pathology": "#B22222",
+    "argumentation": "#4E6B3F",
 }
 
 

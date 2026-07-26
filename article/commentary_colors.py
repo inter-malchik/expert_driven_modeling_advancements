@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-COMMENTARY_IDS = [f"n{i}" for i in range(1, 55)]
+COMMENTARY_IDS = [f"n{i}" for i in range(1, 49)]
 
 
 def _palette(hue: float) -> dict[str, str]:
