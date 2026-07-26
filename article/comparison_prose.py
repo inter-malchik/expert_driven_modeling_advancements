@@ -25,6 +25,10 @@ _STANDALONE_TAG_LINE = re.compile(
     re.IGNORECASE | re.MULTILINE,
 )
 _SELF_REPORT = re.compile(r"\n\*\*Self-report:\*\*.*\Z", re.DOTALL)
+_SRC_LINK_LINE = re.compile(
+    r"^\s*>\s*\*\*Source in\s*`src/`\s*:\*\*.*(?:\n|$)",
+    re.MULTILINE,
+)
 _DIRECTION_HEADING = re.compile(r"^## Direction ", re.MULTILINE)
 _MULTI_SPACE = re.compile(r"  +")
 _SPACE_BEFORE_PUNCT = re.compile(r"\s+([,.;:!?])")
@@ -34,6 +38,7 @@ def clean_comparison_prose(text: str) -> str:
     text = _EPISTEMIC_TAG.sub("", text)
     text = _STANDALONE_TAG_LINE.sub("", text)
     text = _SELF_REPORT.sub("", text)
+    text = _SRC_LINK_LINE.sub("", text)
     text = _DIRECTION_HEADING.sub("## Proposed direction ", text)
     text = _SPACE_BEFORE_PUNCT.sub(r"\1", text)
     text = _MULTI_SPACE.sub(" ", text)

@@ -644,6 +644,80 @@ section[data-testid="stMain"] > div {
     margin: 0 !important;
 }
 
+.paper-commentary-update-box {
+    margin-top: 0.65rem;
+    padding-top: 0.55rem;
+    border-top: 1px dashed var(--commentary-border, #d8c8d2);
+    font-size: 8.5pt;
+}
+
+.paper-commentary-update-label {
+    font-weight: 700;
+    color: var(--commentary-accent, #8a6d82);
+    margin-right: 0.3rem;
+}
+
+.paper-commentary-update-text {
+    color: #333;
+}
+
+.paper-commentary-help-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.1rem;
+    height: 1.1rem;
+    background: var(--commentary-accent, #8a6d82);
+    color: #fff !important;
+    border-radius: 50%;
+    font-size: 7.5pt;
+    font-weight: 700;
+    margin-left: 0.35rem;
+    cursor: help;
+    position: relative;
+    vertical-align: middle;
+    text-decoration: none !important;
+}
+
+.paper-commentary-help-icon:hover .paper-commentary-tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+.paper-commentary-tooltip {
+    visibility: hidden;
+    width: 220px;
+    background-color: #333;
+    color: #fff;
+    text-align: left;
+    border-radius: 4px;
+    padding: 0.6rem 0.8rem;
+    position: absolute;
+    z-index: 100;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -110px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-weight: 400;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.4;
+    font-size: 8.5pt;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    pointer-events: none;
+}
+
+.paper-commentary-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+}
+
 .paper-body h2,
 .paper-body h3 {
     scroll-margin-top: 1rem;

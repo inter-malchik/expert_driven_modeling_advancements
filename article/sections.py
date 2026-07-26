@@ -116,6 +116,8 @@ CATEGORY_COLORS = {
     "evaluation": "#2F6B62",
     "explanation": "#6B6B2C",
     "epixai": "#8A5A3F",
+    "optimization": "#2E8B57",
+    "pathology": "#B22222",
 }
 
 
@@ -137,6 +139,25 @@ def _commentary_html(commentary: Commentary) -> str:
     body = html.escape(commentary["body"]).replace("\n\n", "</p><p>")
     tagline = html.escape(commentary["tagline"])
     anchor_preview = html.escape(commentary["anchor_preview"])
+
+    proposed_update = commentary.get("proposed_update")
+    update_details = commentary.get("update_details")
+    update_html = ""
+    if proposed_update:
+        help_icon = ""
+        if update_details:
+            help_icon = (
+                f'<span class="paper-commentary-help-icon">?'
+                f'<span class="paper-commentary-tooltip">{html.escape(update_details)}</span>'
+                f"</span>"
+            )
+        update_html = (
+            f'<div class="paper-commentary-update-box">'
+            f'<span class="paper-commentary-update-label">Proposed update:</span>'
+            f'<span class="paper-commentary-update-text">{html.escape(proposed_update)}</span>'
+            f"{help_icon}"
+            f"</div>"
+        )
 
     sources_html = ""
     if commentary["sources"]:
@@ -177,6 +198,7 @@ def _commentary_html(commentary: Commentary) -> str:
         f'<div class="paper-commentary-body">'
         f"{preview_html}"
         f"<p>{body}</p>"
+        f"{update_html}"
         f"{filenote_html}"
         f"{sources_html}"
         f'<p class="paper-commentary-tagline">{tagline}</p>'

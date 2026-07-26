@@ -27,6 +27,7 @@ SOURCE_URLS: dict[str, str] = {
     "Verification, Validation and Confirmation... — doi:10.1126/science.263.5147.641": "https://doi.org/10.1126/science.263.5147.641",
     "Plan Explanations as Model Reconciliation — arXiv:1701.08317": "https://arxiv.org/abs/1701.08317",
     "Training LMs to Follow Instructions (InstructGPT) — arXiv:2203.02155": "https://arxiv.org/abs/2203.02155",
+    "Ma et al. (2023). Eureka: Human-Level Reward Design via Coding Large Language Models.": "https://arxiv.org/abs/2310.12931",
 }
 
 

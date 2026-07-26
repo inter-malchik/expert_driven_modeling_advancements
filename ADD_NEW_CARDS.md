@@ -29,7 +29,7 @@
 
 ## 2. Шаг 1 — создать analysis-файл
 
-Путь: `article/analysis/NN_<slug>.md`, где `NN` — следующий свободный номер (сейчас существуют `01…15`).
+Путь: `article/analysis/<slug>.md`.
 
 Требования:
 
@@ -45,6 +45,8 @@
 Минимальный скелет:
 
 ```markdown
+> **Paper B — live link:** [URL](URL)
+
 #### comparison with <краткое имя источника>
 
 Paper A (Gindullina et al., …) — …
@@ -72,14 +74,14 @@ Paper B (<автор>, «<название>») — …
 
 | Поле | Значение | Заметки |
 |---|---|---|
-| `id` | `"n<N>"` (следующий за существующим `n15`) | Также используется как: якорь HTML (`#commentary-n16`), id подсвеченного фрагмента (`#anchor-n16`), ключ в `ANCHOR_TEXTS`, ключ палитры |
+| `id` | `"n<N>"` (следующий за существующим) | Также используется как: якорь HTML (`#commentary-n16`), id подсвеченного фрагмента (`#anchor-n16`), ключ в `ANCHOR_TEXTS`, ключ палитры |
 | `section` | Название раздела статьи | **Должно совпадать** с текстом заголовка `<h2>` или `<h3>` в `body_html.py`, иначе `_inject_commentaries` (`article/sections.py:193`) не вставит блок |
-| `category` | Строковый ID категории | Используется в CSS-классах; известные значения: `reliability`, `architecture`, `alignment`, `formalization`, `evaluation`, `explanation`, `epixai` (см. `CATEGORY_COLORS`, `article/sections.py:111`) |
+| `category` | Строковый ID категории | Используется в CSS-классах; известные значения: `reliability`, `architecture`, `alignment`, `formalization`, `evaluation`, `explanation`, `epixai`, `optimization`, `pathology` |
 | `category_label` | Человекочитаемая метка категории | Показывается в шапке карточки |
-| `marker` | Один типографский символ (`¶`, `‖`, `‡`, `§`, `*`, `†`, `⁂` и т. п.) | Показывается перед заголовком; также выводится как `<sup>` в тексте статьи над подсвеченным фрагментом |
+| `marker` | Один типографский символ (`¶`, `‖`, `‡`, `§`, `*`, `†`, `⁂`, `∆`, `Σ`, `Ω`, `⊗` и т. п.) | Показывается перед заголовком; также выводится как `<sup>` в тексте статьи над подсвеченным фрагментом |
 | `title` | Короткий заголовок карточки | Отображается жирным в `<summary>` |
 | `body` | Основной текст карточки | Экранируется через `html.escape`, двойные переносы строк превращаются в `<p>` |
-| `filenote` | Имя markdown-файла в формате `NN_slug.md` или `NN_slug.md — комментарий` | Функция `analysis_slug_from_filenote` (`article/analysis_index.py:16`) отрезает всё после `" — "` и `.md`. Ссылка *«Read full comparison»* появляется, только если файл существует |
+| `filenote` | Имя markdown-файла в формате `slug.md` или `slug.md — комментарий` | Функция `analysis_slug_from_filenote` (`article/analysis_index.py:16`) отрезает всё после `" — "` и `.md`. Ссылка *«Read full comparison»* появляется, только если файл существует |
 | `tagline` | Мини-подпись под телом | Обычно `"Literature comparison"` или `"Literature comparison (proposed extension)"` |
 | `anchor_preview` | Одна короткая фраза | Показывается в цитатной рамке; если пусто — блок «Linked passage in text» тоже пропускается |
 | `sources` | Список `CommentarySource` | Минимум один элемент вида `{"text": …, "url": …|None, "verified": bool}` |
@@ -89,19 +91,19 @@ Paper B (<автор>, «<название>») — …
 ```python
 {
     "id": "n16",
-    "section": "3.3. Working with the framework",
-    "category": "reliability",
-    "category_label": "LLM Reliability",
-    "marker": "◊",
+    "section": "4. Limitations and Future work",
+    "category": "optimization",
+    "category_label": "Active Optimization",
+    "marker": "∆",
     "title": "…",
     "body": "…",
-    "filenote": "16_myauthor_2026_topic.md",
+    "filenote": "wei_2024_dante_active_optimization.md",
     "tagline": "Literature comparison",
     "anchor_preview": "…",
     "sources": [
         {
-            "text": "Author (2026), Title — arXiv:2601.12345",
-            "url": "https://arxiv.org/abs/2601.12345",
+            "text": "Wei et al. (2024/25). DANTE: Deep active optimization for complex systems.",
+            "url": "https://doi.org/10.1038/s43588-025-00858-x",
             "verified": True,
         },
     ],

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-COMMENTARY_IDS = [f"n{i}" for i in range(1, 16)]
+COMMENTARY_IDS = [f"n{i}" for i in range(1, 55)]
 
 
 def _palette(hue: float) -> dict[str, str]:
@@ -16,7 +16,7 @@ def _palette(hue: float) -> dict[str, str]:
 
 
 COMMENTARY_PALETTES: dict[str, dict[str, str]] = {
-    commentary_id: _palette((index * 360 / 15) + 8)
+    commentary_id: _palette((index * 360 / len(COMMENTARY_IDS)) + 8)
     for index, commentary_id in enumerate(COMMENTARY_IDS)
 }
 
