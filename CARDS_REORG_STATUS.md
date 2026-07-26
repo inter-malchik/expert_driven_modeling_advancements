@@ -5,7 +5,18 @@
 Смежные документы:
 - [`ADD_NEW_CARDS.md`](./ADD_NEW_CARDS.md) — инструкция «как добавить карточку» (уже отредактирована пользователем, вводит категории `optimization`/`pathology` и маркеры `∆ Σ Ω ⊗`; см. п. «Что осталось» ниже — две мелкие правки).
 - [`article/context/dinara_comprehensive_review.md`](./article/context/dinara_comprehensive_review.md) — обзор от эксперта, задающий приоритеты (что «ядро», что «второстепенное») и рамку рерайта карточек.
+- [`article/context/card_drafts_snapshot.json`](./article/context/card_drafts_snapshot.json) — **durable-снапшот** данных по 33 новым файлам (thesis, anchor_text, paper_b_url, inferred_section). Используется вместо `/tmp/card_drafts.json`.
 - Утверждённый план: `/Users/inter-malchik/.claude/plans/ai-chat-attachment-6895312849033851907-keen-aurora.md`.
+
+---
+
+## ⚠️ Критические предупреждения перед началом работы
+
+1. **`article/commentary_anchors.py` сейчас в сломанном промежуточном состоянии.** Файл содержит 48 ключей `n1…n48`, но записи `n16…n48` — **мусор из предыдущей сессии**: часть строк скопирована прямо из обзора Динары (`"Согласно Zhang et al. (2026, TRM), ..."`, `"Ma et al. (2023). Eureka. ..."`), эти фрагменты в `body_html.py` **не встречаются** и подсвечиваться не будут. Часть (`n41…n48`) — реальные фрагменты статьи, но нет связи с конкретными новыми slug-ами. **При выполнении #15 нужно СТЕРЕТЬ ключи `n16…n48` и вписать заново**, используя `article/context/card_drafts_snapshot.json:anchor_text`. Файл `commentary_colors.py` рассчитывает палитру и на несуществующие ID — это ок, но лишние ключи в `ANCHOR_TEXTS` без записей в `COMMENTARIES` игнорируются `inject_anchor_highlights`, так что визуально это пока не сломано — просто грязно.
+
+2. **Заголовки статьи фиксированы.** `body_html.py` содержит ровно 14 заголовков (см. раздел 4.1 ниже). Любое значение `section` в новой карточке должно **точно** совпадать с одним из этих 14 — иначе `_inject_commentaries` пропустит карточку. Все 33 `inferred_section` уже сверены со списком.
+
+3. **10 из 33 новых якорей пересекаются с оригинальными `n1…n15`** (см. раздел 4.3). Это не ошибка — можно оставить, будет два `<sup>marker</sup>` на одном фрагменте. Но при желании чистой визуальной картины для этих 10 карточек стоит взять альтернативную цитату (у каждого файла обычно 5–15 Гиндуллинских цитат, скрипт брал первую совпавшую).
 
 ---
 
@@ -240,7 +251,159 @@ CATEGORY_COLORS = {
 
 ---
 
-## 4. Технические ограничения (не забыть)
+## 4. Справочные таблицы
+
+### 4.1. Все заголовки `body_html.py` в порядке следования
+
+Извлечено регулярным выражением `<(h[23])>([^<]+)</\1>`:
+
+| # | tag | текст (используется как `section`) |
+|---|---|---|
+| 1 | h2 | `1. Introduction` |
+| 2 | h2 | `2. Methodology` |
+| 3 | h3 | `2.1. Conversational Agent` |
+| 4 | h3 | `2.2. Hierarchical text classifier` |
+| 5 | h3 | `2.3. PINN Customizer` |
+| 6 | h3 | `2.4. Evaluation Approach` |
+| 7 | h2 | `3. Results and Discussion` |
+| 8 | h3 | `3.1. Hierarchical text classifier` |
+| 9 | h3 | `3.2. Code correctness` |
+| 10 | h3 | `3.3. Working with the framework` |
+| 11 | h3 | `3.4. Framework performance` |
+| 12 | h2 | `4. Limitations and Future work` |
+| 13 | h2 | `5. Conclusion` |
+| 14 | h2 | `Appendix A. Classification of expert comments` |
+
+Все 33 `inferred_section` из снапшота попадают в этот список — правки `body_html.py` не требуются.
+
+### 4.2. URL-таблица для новых 33 источников
+
+Данные из `article/context/card_drafts_snapshot.json` (поле `paper_b_url`). Кладутся прямо в `sources[].url`:
+
+| slug | url |
+|---|---|
+| abell_landscape_features_under_noise | ⚠️ нет URL в файле — искать вручную (Scott & De Jong 2016) |
+| amgoud_2015_undercutting | https://doi.org/10.1007/978-3-319-23540-0_18 |
+| arioua_2015_explanatory_dialogues | https://doi.org/10.1007/978-3-319-23540-0_19 |
+| bisquert_2015_dual_process_argument | https://doi.org/10.1007/978-3-319-23540-0_20 |
+| cayrol_2015_bipolar_change | https://doi.org/10.1007/978-3-319-23540-0_21 |
+| clark_deconstructing_big_valley | (проверить в файле) |
+| daza_2016_basin_entropy | https://doi.org/10.1038/srep31416 |
+| dubois_2015_possibilistic_inconsistency | (проверить в файле) |
+| eftimov_2019_edsc_statistical_comparison | https://doi.org/10.1016/j.ins.2019.03.049 |
+| epstein_2008_why_model | https://jasss.soc.surrey.ac.uk/11/4/12.html |
+| hadjimichael_1993_interactive_inductive | (проверить в файле) |
+| halpern_pearl_2005_causes_and_explanations | https://arxiv.org/abs/cs/0011012 |
+| hayes_2017_policy_explanation | (проверить в файле) |
+| hidalgo_2018_glucose_grammatical_evolution | https://doi.org/10.1007/978-3-319-74718-7_55 |
+| kerschke_2019_algorithm_selection_survey | (проверить в файле) |
+| malan_2021_landscape_analysis_survey | https://doi.org/10.3390/a14020040 |
+| malan_gradient_walk_nn_landscapes | (проверить в файле) |
+| malek_2009_multi_agent_collaboration | ⚠️ **нет URL** — оставить `None`, `verified: False` |
+| mehdi_2015_compositional_forecasting | (проверить в файле) |
+| merhej_2015_asp_rules_of_thumb | (проверить в файле) |
+| miller_2020_contrastive_explanation | https://arxiv.org/abs/1811.03163 |
+| noy_2001_ontology_development_101 | https://protege.stanford.edu/publications/ontology_development/ontology101.pdf |
+| omahony_icon_algorithm_selection_challenge | (проверить в файле) |
+| potyka_2015_priority_probabilistic_kb | (проверить в файле) |
+| skvorc_2020_ela_problem_space | (проверить в файле) |
+| steiner_2024_steering_wheel_crn | https://doi.org/10.1038/s41467-024-47997-9 |
+| studer_1998_knowledge_engineering | (проверить в файле) |
+| tonda_2013_bnsl_interaction | (проверить в файле) |
+| unpredictabilityAndComputationalIrreducibility | (проверить в файле) |
+| walton_2010_dialogue_explanation | (проверить в файле) |
+| weakEmergence | (проверить в файле) |
+| wei_2024_dante_active_optimization | https://doi.org/10.1038/s43588-025-00858-x |
+| zhang_2026_trm_complex_reasoning | https://arxiv.org/abs/2602.08498 |
+
+Полный набор URL перегенерируется:
+```bash
+python3 -c "
+import json
+d = json.load(open('article/context/card_drafts_snapshot.json'))
+for e in d:
+    print(f'{e[\"slug\"]}\t{e[\"paper_b_url\"]}')" | column -t -s $'\t'
+```
+
+### 4.3. Пересечения новых якорей с оригинальными 15
+
+10 из 33 новых карточек «сядут» на тот же фрагмент, что и существующая карточка `n1…n15`:
+
+| новая карточка | пересекается с | фрагмент (сокр.) |
+|---|---|---|
+| amgoud_2015_undercutting | `n7` | «rules, provided in Appendix A…» |
+| dubois_2015_possibilistic_inconsistency | `n14` | «current system of rules…lacks detail» |
+| hadjimichael_1993_interactive_inductive | `n3` | «interactive framework…expert-in-the-loop» |
+| halpern_pearl_2005_causes_and_explanations | `n3` | «interactive framework…expert-in-the-loop» |
+| malan_2021_landscape_analysis_survey | `n4` | «composite loss function…» |
+| malan_gradient_walk_nn_landscapes | `n4` | «composite loss function…» |
+| merhej_2015_asp_rules_of_thumb | `n14` | «current system of rules…» |
+| miller_2020_contrastive_explanation | `n15` | «subjective component…Compliance» |
+| omahony_icon_algorithm_selection_challenge | `n9` | «lack of standardized numerical metrics…» |
+| weakEmergence | `n4` | «composite loss function…» |
+
+Обёртка `<a class="paper-anchor paper-anchor--n<N>">` заменяется рекурсивно `inject_anchor_highlights` (обратный порядок), — несколько spans на одном фрагменте технически возможны. Визуальный эффект: 2+ `<sup>marker</sup>` подряд после одного и того же куска текста. Можно оставить, можно взять альтернативную цитату из того же файла (все они уже в теле карточки в виде блоков `> **Quote (Gindullina et al.):**`).
+
+### 4.4. Worked example — готовый черновик карточки для `wei_2024_dante_active_optimization`
+
+Использовать как шаблон стиля/тона для остальных «ядерных» 10. Body написан против Roadmap Q1 шаг 2:
+
+```python
+{
+    "id": "n16",  # первое N после существующих 15
+    "section": "3.3. Working with the framework",
+    "category": "optimization",
+    "category_label": "Active Optimization",
+    "marker": "∆",
+    "title": "Best-of-N with a surrogate, not one shot at T=1.0",
+    "body": (
+        "Wei et al.'s DANTE solves exactly the loop this paper builds — free-form intent → "
+        "expensive black-box evaluation — with two moves this pipeline currently skips: "
+        "generate k=8/16 candidates per prompt, then use a cheap surrogate quality model "
+        "to pick the winner before paying for a full PINN retrain. At T=1.0 the Customizer "
+        "already emits multiple valid loss edits per comment (Fig. 3, 20 launches); "
+        "discarding all but one is throwing away the sampling budget DANTE's surrogate needs. "
+        "Ported to this system, Roadmap step 2 predicts compliance 25% → 40–50% without "
+        "changing the base LLM or the PINN itself."
+    ),
+    "filenote": "wei_2024_dante_active_optimization.md",
+    "tagline": "Literature comparison (proposed extension)",
+    "anchor_preview": (
+        "A published loop for expensive-evaluation black boxes already runs best-of-k with a "
+        "surrogate pre-screen — the exact step missing between comment and PINN retrain."
+    ),
+    "sources": [
+        {
+            "text": "Wei et al. (2024), DANTE: Deep active optimization for complex systems",
+            "url": "https://doi.org/10.1038/s43588-025-00858-x",
+            "verified": True,
+        },
+    ],
+},
+```
+
+Соответствующая запись в `ANCHOR_TEXTS`:
+```python
+"n16": (
+    "the epidemic curve retains a plausible shape but exhibits an unrealistically "
+    "long outbreak duration (more than 700 days)"
+),
+```
+
+(текст взят из `card_drafts_snapshot.json:anchor_text` для этого slug — уже верифицирован substring-совпадением с body_html.py).
+
+### 4.5. Тезисы из каждого файла (черновик body для #13)
+
+Каждая запись в `card_drafts_snapshot.json:thesis` содержит первый нецитатный абзац файла — обычно это тезис Paper A → Paper B в 2–3 предложениях. Пример:
+
+- `wei_2024_dante_active_optimization.thesis`: «Paper A (Gindullina et al.) evaluates modifications to a PINN loss function via a full retrain and expert judgement… Paper B (Wei et al., DANTE) proposes a DEEP active-optimization loop with surrogate pre-screening…»
+- `zhang_2026_trm_complex_reasoning.thesis`: аналогично, вводит Bradley-Terry rewards как замену subjective compliance.
+
+Для «ядерных» 11 body писать заново по мотивам обзора; для «второстепенных» 22 — можно взять первое предложение thesis и слегка отредактировать.
+
+---
+
+## 5. Технические ограничения (не забыть)
 
 1. **Anchor text ≠ regex**: `inject_anchor_highlights` делает `str.find` с нормализацией `’‘“”–` → ASCII (см. `article/anchor_highlights.py:13`). Если якорь содержит `\n`, HTML-теги или множественные пробелы — совпадение не найдётся. Скрипт `extract_card_drafts.py` уже подобрал безопасные варианты.
 2. **Filenote — не путь**: только имя файла (`slug.md`), без `article/analysis/`. Функция `analysis_slug_from_filenote` (`article/analysis_index.py:16`) отрезает суффикс `.md` и всё после `" — "`.
