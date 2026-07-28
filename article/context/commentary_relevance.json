@@ -1,0 +1,368 @@
+{
+  "items": {
+    "n1": {
+      "relevance_actionability": 3,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n2": {
+      "relevance_actionability": 3,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 3
+    },
+    "n3": {
+      "relevance_actionability": 4,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n4": {
+      "relevance_actionability": 2,
+      "relevance_expansion_value": 3,
+      "relevance_method_fit": 3,
+      "relevance_score": 3,
+      "relevance_transferability": 3
+    },
+    "n5": {
+      "relevance_actionability": 4,
+      "relevance_expansion_value": 5,
+      "relevance_method_fit": 5,
+      "relevance_score": 5,
+      "relevance_transferability": 5
+    },
+    "n6": {
+      "relevance_actionability": 3,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n7": {
+      "relevance_actionability": 4,
+      "relevance_expansion_value": 5,
+      "relevance_method_fit": 5,
+      "relevance_score": 5,
+      "relevance_transferability": 4
+    },
+    "n8": {
+      "relevance_actionability": 5,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 5,
+      "relevance_score": 5,
+      "relevance_transferability": 5
+    },
+    "n9": {
+      "relevance_actionability": 3,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n10": {
+      "relevance_actionability": 3,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n11": {
+      "relevance_actionability": 2,
+      "relevance_expansion_value": 3,
+      "relevance_method_fit": 3,
+      "relevance_score": 2,
+      "relevance_transferability": 3
+    },
+    "n12": {
+      "relevance_actionability": 3,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n13": {
+      "relevance_actionability": 4,
+      "relevance_expansion_value": 5,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n14": {
+      "relevance_actionability": 3,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n15": {
+      "relevance_actionability": 3,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 3
+    },
+    "n16": {
+      "relevance_actionability": 4,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n17": {
+      "relevance_actionability": 4,
+      "relevance_expansion_value": 5,
+      "relevance_method_fit": 5,
+      "relevance_score": 5,
+      "relevance_transferability": 5
+    },
+    "n18": {
+      "relevance_actionability": 3,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n19": {
+      "relevance_actionability": 4,
+      "relevance_expansion_value": 5,
+      "relevance_method_fit": 5,
+      "relevance_score": 5,
+      "relevance_transferability": 5
+    },
+    "n20": {
+      "relevance_actionability": 3,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n21": {
+      "relevance_actionability": 3,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n22": {
+      "relevance_actionability": 3,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n23": {
+      "relevance_actionability": 4,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n24": {
+      "relevance_actionability": 5,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 5,
+      "relevance_score": 5,
+      "relevance_transferability": 5
+    },
+    "n25": {
+      "relevance_actionability": 2,
+      "relevance_expansion_value": 3,
+      "relevance_method_fit": 3,
+      "relevance_score": 2,
+      "relevance_transferability": 3
+    },
+    "n26": {
+      "relevance_actionability": 4,
+      "relevance_expansion_value": 5,
+      "relevance_method_fit": 5,
+      "relevance_score": 5,
+      "relevance_transferability": 5
+    },
+    "n27": {
+      "relevance_actionability": 3,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n28": {
+      "relevance_actionability": 3,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n29": {
+      "relevance_actionability": 5,
+      "relevance_expansion_value": 5,
+      "relevance_method_fit": 5,
+      "relevance_score": 5,
+      "relevance_transferability": 4
+    },
+    "n30": {
+      "relevance_actionability": 4,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n31": {
+      "relevance_actionability": 3,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 5,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n32": {
+      "relevance_actionability": 3,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n33": {
+      "relevance_actionability": 4,
+      "relevance_expansion_value": 5,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n34": {
+      "relevance_actionability": 2,
+      "relevance_expansion_value": 3,
+      "relevance_method_fit": 3,
+      "relevance_score": 2,
+      "relevance_transferability": 3
+    },
+    "n35": {
+      "relevance_actionability": 4,
+      "relevance_expansion_value": 5,
+      "relevance_method_fit": 5,
+      "relevance_score": 5,
+      "relevance_transferability": 4
+    },
+    "n36": {
+      "relevance_actionability": 3,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 3
+    },
+    "n37": {
+      "relevance_actionability": 4,
+      "relevance_expansion_value": 5,
+      "relevance_method_fit": 5,
+      "relevance_score": 5,
+      "relevance_transferability": 5
+    },
+    "n38": {
+      "relevance_actionability": 4,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n39": {
+      "relevance_actionability": 4,
+      "relevance_expansion_value": 5,
+      "relevance_method_fit": 5,
+      "relevance_score": 5,
+      "relevance_transferability": 5
+    },
+    "n40": {
+      "relevance_actionability": 4,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n41": {
+      "relevance_actionability": 3,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n42": {
+      "relevance_actionability": 3,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n43": {
+      "relevance_actionability": 3,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n44": {
+      "relevance_actionability": 2,
+      "relevance_expansion_value": 3,
+      "relevance_method_fit": 3,
+      "relevance_score": 2,
+      "relevance_transferability": 3
+    },
+    "n45": {
+      "relevance_actionability": 3,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n46": {
+      "relevance_actionability": 2,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 3,
+      "relevance_score": 3,
+      "relevance_transferability": 3
+    },
+    "n47": {
+      "relevance_actionability": 4,
+      "relevance_expansion_value": 5,
+      "relevance_method_fit": 5,
+      "relevance_score": 5,
+      "relevance_transferability": 4
+    },
+    "n48": {
+      "relevance_actionability": 5,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 5,
+      "relevance_score": 5,
+      "relevance_transferability": 5
+    },
+    "n49": {
+      "relevance_actionability": 5,
+      "relevance_expansion_value": 5,
+      "relevance_method_fit": 5,
+      "relevance_score": 5,
+      "relevance_transferability": 5
+    },
+    "n50": {
+      "relevance_actionability": 4,
+      "relevance_expansion_value": 5,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    },
+    "n51": {
+      "relevance_actionability": 5,
+      "relevance_expansion_value": 4,
+      "relevance_method_fit": 5,
+      "relevance_score": 5,
+      "relevance_transferability": 5
+    },
+    "n52": {
+      "relevance_actionability": 4,
+      "relevance_expansion_value": 5,
+      "relevance_method_fit": 4,
+      "relevance_score": 4,
+      "relevance_transferability": 4
+    }
+  }
+}
