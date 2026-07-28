@@ -2,24 +2,17 @@
 
 from __future__ import annotations
 
-COMMENTARY_IDS = [f"n{i}" for i in range(1, 49)]
+import hashlib
+
+from article.palette_utils import palette
 
 
-def _palette(hue: float) -> dict[str, str]:
-    return {
-        "accent": f"hsl({hue:.0f}, 30%, 40%)",
-        "bg": f"hsl({hue:.0f}, 38%, 95%)",
-        "border": f"hsl({hue:.0f}, 28%, 78%)",
-        "highlight": f"hsl({hue:.0f}, 42%, 90%)",
-        "highlight_border": f"hsl({hue:.0f}, 32%, 62%)",
-    }
-
-
-COMMENTARY_PALETTES: dict[str, dict[str, str]] = {
-    commentary_id: _palette((index * 360 / len(COMMENTARY_IDS)) + 8)
-    for index, commentary_id in enumerate(COMMENTARY_IDS)
-}
+def _hue_from_id(commentary_id: str) -> float:
+    # Use a stable hash so colors do not change between Python processes.
+    digest = hashlib.blake2s(commentary_id.encode("utf-8"), digest_size=4).digest()
+    value = int.from_bytes(digest, "big")
+    return (value % 3600) / 10.0
 
 
 def palette_for(commentary_id: str) -> dict[str, str]:
-    return COMMENTARY_PALETTES.get(commentary_id, _palette(330))
+    return palette(_hue_from_id(commentary_id))

@@ -168,4 +168,16 @@ ANCHOR_TEXTS: dict[str, str] = {
     "n48": (
         'An LLM-expert-evaluator could quantify forecast compliance with the original comment; low confidence scores could trigger automatic loss regeneration or comment refinement.'
     ),
+    "n49": (
+        'A promising direction is to evolve the system toward a multi-agent architecture, where specialized LLMs enhance autonomy and objectivity. An LLM-expert-evaluator could quantify forecast compliance with the original comment; low confidence scores could trigger automatic loss regeneration or comment refinement. An LLM-loss-semantic-checker could verify alignment between the generated code and modification rules, reducing hallucinations.'
+    ),
+    "n50": (
+        'After successfully generating a syntactically correct loss function, the module initiates the process of further training of PINN'
+    ),
+    "n51": (
+        'The defining characteristic of the PINN methodology is the optimization of a composite loss function that includes both the data-fitting error and the residual of the equations describing the modeled process.'
+    ),
+    "n52": (
+        'A value of 1100 was empirically chosen as the threshold for successfully meeting this criterion, using the MAE (Mean Absolute Error) metric.'
+    ),
 }
