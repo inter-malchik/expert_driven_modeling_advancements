@@ -1,8 +1,6 @@
 """Body rendering for the paper view, including commentary injection."""
 
 from __future__ import annotations
-
-import re
 import streamlit as st
 import streamlit.components.v1 as components
 
@@ -56,31 +54,8 @@ def render_with_commentaries(body_html: str, grouped: dict[str, list[Commentary]
         st.markdown(body_html, unsafe_allow_html=True)
         return
 
-    # 1) Встраиваем карточки как HTML с плейсхолдателями тела комментария.
     html_with_commentaries = inject_commentaries(body_html, grouped)
-
-    # 2) Собираем карту id -> данные комментария
-    all_items: list[dict] = []
-    for items in grouped.values():
-        all_items.extend(items)
-    commentary_map = {c["id"]: c for c in all_items}
-
-    # 3) Разбиваем поток по плейсхолдерам и рендерим части
-    parts = re.split(r"(__COMMENTARY_BODY_[a-zA-Z0-9_-]+__)", html_with_commentaries)
-    for part in parts:
-        if not part:
-            continue
-        m = re.fullmatch(r"__COMMENTARY_BODY_([a-zA-Z0-9_-]+)__", part)
-        if m:
-            cid = m.group(1)
-            data = commentary_map.get(cid)
-            if data is None:
-                st.markdown(f"`[missing commentary {cid}]`")
-            else:
-                # Ключевое: тело комментария рендерим через Markdown/KaTeX Streamlit
-                st.markdown(data.get("body", ""))
-        else:
-            st.markdown(part, unsafe_allow_html=True)
+    st.markdown(html_with_commentaries, unsafe_allow_html=True)
 
 
 def render_body(*, show_commentaries: bool = True) -> None:

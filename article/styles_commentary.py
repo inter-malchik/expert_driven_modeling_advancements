@@ -49,6 +49,14 @@ PAPER_COMMENTARY_CSS = """
 .paper-commentary-body {
     padding: 0 0.8rem 0.65rem;
     border-top: 1px solid var(--commentary-border, #d8c8d2);
+    overflow-x: clip;
+    overflow-wrap: anywhere;
+}
+
+.paper-commentary-body,
+.paper-commentary-body * {
+    box-sizing: border-box;
+    max-width: 100%;
 }
 
 .paper-commentary-body [data-testid="stMarkdownContainer"] p {
@@ -61,6 +69,54 @@ PAPER_COMMENTARY_CSS = """
 
 .paper-commentary-body [data-testid="stMarkdownContainer"] {
     width: 100%;
+}
+
+.paper-commentary-body h1,
+.paper-commentary-body h2,
+.paper-commentary-body h3,
+.paper-commentary-body h4,
+.paper-commentary-body h5,
+.paper-commentary-body h6 {
+    margin: 0.8rem 0 0.4rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 10pt;
+    line-height: 1.3;
+    color: #3f3438;
+}
+
+.paper-commentary-body ul,
+.paper-commentary-body ol {
+    margin: 0 0 0.55rem 1.15rem;
+    padding-left: 0.85rem;
+}
+
+.paper-commentary-body li {
+    margin: 0 0 0.3rem;
+    line-height: 1.45;
+}
+
+.paper-commentary-body blockquote {
+    margin: 0.35rem 0 0.45rem 0.35rem;
+    padding: 0.15rem 0 0.15rem 0.75rem;
+    border-left: 2px solid var(--commentary-border, #d8c8d2);
+    color: #5a4d52;
+}
+
+.paper-commentary-body blockquote p {
+    margin: 0 !important;
+}
+
+.paper-commentary-body code {
+    white-space: break-spaces;
+    overflow-wrap: anywhere;
+    background: rgba(255, 255, 255, 0.65);
+    border-radius: 3px;
+    padding: 0.05rem 0.25rem;
+    font-size: 0.92em;
+}
+
+.paper-commentary-math {
+    font-family: "Times New Roman", Times, serif;
 }
 
 .paper-commentary-head {
@@ -76,6 +132,13 @@ PAPER_COMMENTARY_CSS = """
     font-weight: 700;
     font-size: 1.05rem;
     color: var(--commentary-accent, #8a6d82);
+}
+
+.paper-commentary-type {
+    font-size: 0.95rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
 }
 
 .paper-commentary-label {
@@ -216,6 +279,10 @@ PAPER_COMMENTARY_CSS = """
     border-top: 1px solid var(--commentary-border, #d8c8d2);
 }
 
+.paper-commentary-sources-panel {
+    padding-top: 0.15rem;
+}
+
 .paper-commentary-sources-summary {
     font-size: 8.5pt;
     font-weight: 600;
@@ -278,6 +345,23 @@ PAPER_COMMENTARY_CSS = """
     text-decoration: underline;
 }
 
+.paper-commentary-sources-markdown {
+    margin-top: 0.45rem;
+}
+
+.paper-commentary-sources-markdown > :first-child {
+    margin-top: 0;
+}
+
+.paper-commentary-sources-markdown h1,
+.paper-commentary-sources-markdown h2,
+.paper-commentary-sources-markdown h3,
+.paper-commentary-sources-markdown h4,
+.paper-commentary-sources-markdown h5,
+.paper-commentary-sources-markdown h6 {
+    font-size: 9pt;
+}
+
 .paper-commentary-relevance-box {
     margin-top: 0.7rem;
     padding-top: 0.55rem;
@@ -334,61 +418,8 @@ PAPER_COMMENTARY_CSS = """
     color: #333;
 }
 
-.paper-commentary-help-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.1rem;
-    height: 1.1rem;
-    background: var(--commentary-accent, #8a6d82);
-    color: #fff !important;
-    border-radius: 50%;
-    font-size: 7.5pt;
-    font-weight: 700;
-    margin-left: 0.35rem;
-    cursor: help;
-    position: relative;
-    vertical-align: middle;
-    text-decoration: none !important;
-}
-
-.paper-commentary-help-icon:hover .paper-commentary-tooltip {
-    visibility: visible;
-    opacity: 1;
-}
-
-.paper-commentary-tooltip {
-    visibility: hidden;
-    width: 220px;
-    background-color: #333;
-    color: #fff;
-    text-align: left;
-    border-radius: 4px;
-    padding: 0.6rem 0.8rem;
-    position: absolute;
-    z-index: 100;
-    bottom: 125%;
-    left: 50%;
-    margin-left: -110px;
-    opacity: 0;
-    transition: opacity 0.2s;
-    font-weight: 400;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    line-height: 1.4;
-    font-size: 8.5pt;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    pointer-events: none;
-}
-
-.paper-commentary-tooltip::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: #333 transparent transparent transparent;
+.paper-commentary-update-details {
+    color: #5a4d52;
 }
 
 .paper-body h2,

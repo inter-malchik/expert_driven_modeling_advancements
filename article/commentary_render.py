@@ -42,7 +42,49 @@ def commentary_style(commentary_id: str) -> str:
 
 
 def _format_inline_markdown(text: str) -> str:
+    def render_math(match: re.Match[str]) -> str:
+        tex = match.group(1)
+        tex = tex.replace(r"\(", "").replace(r"\)", "")
+        tex = re.sub(r"\\text\{([^{}]+)\}", r"\1", tex)
+        tex = re.sub(r"\\boldsymbol\{([^{}]+)\}", r"\1", tex)
+
+        # Support the most common inline TeX used in commentary bodies.
+        replacements = {
+            r"\leq": "≤",
+            r"\le": "≤",
+            r"\geq": "≥",
+            r"\ge": "≥",
+            r"\neq": "≠",
+            r"\times": "×",
+            r"\cdot": "·",
+            r"\sim": "∼",
+            r"\infty": "∞",
+            r"\alpha": "α",
+            r"\beta": "β",
+            r"\gamma": "γ",
+            r"\theta": "θ",
+            r"\lambda": "λ",
+            r"\epsilon": "ε",
+            r"\varepsilon": "ε",
+        }
+        for source, target in replacements.items():
+            tex = tex.replace(source, target)
+
+        tex = re.sub(r"_\{([^{}]+)\}", r"<sub>\1</sub>", tex)
+        tex = re.sub(r"\^\{([^{}]+)\}", r"<sup>\1</sup>", tex)
+        tex = re.sub(r"_([A-Za-z0-9])", r"<sub>\1</sub>", tex)
+        tex = re.sub(r"\^([A-Za-z0-9])", r"<sup>\1</sup>", tex)
+        tex = tex.replace("{", "").replace("}", "")
+        return f'<span class="paper-commentary-math">{tex}</span>'
+
     escaped = html.escape(text)
+    escaped = re.sub(
+        r"\[([^\]]+)\]\(([^)]+)\)",
+        r'<a href="\2" target="_blank" rel="noopener noreferrer">\1</a>',
+        escaped,
+    )
+    escaped = re.sub(r"\$([^$]+)\$", render_math, escaped)
+    escaped = re.sub(r"\\\((.+?)\\\)", render_math, escaped)
     escaped = re.sub(r"`([^`]+)`", r"<code>\1</code>", escaped)
     escaped = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", escaped)
     escaped = re.sub(r"\*([^*]+)\*", r"<em>\1</em>", escaped)
@@ -50,19 +92,128 @@ def _format_inline_markdown(text: str) -> str:
 
 
 def commentary_body_html(body: str) -> str:
-    paragraphs = [chunk.strip() for chunk in re.split(r"\n\s*\n", body.strip()) if chunk.strip()]
-    if not paragraphs:
+    lines = body.strip().splitlines()
+    if not lines:
         return ""
-    rendered = []
-    for paragraph in paragraphs:
-        lines = "<br>".join(_format_inline_markdown(line.strip()) for line in paragraph.splitlines() if line.strip())
-        rendered.append(f"<p>{lines}</p>")
+
+    rendered: list[str] = []
+    list_stack: list[dict[str, int | bool | str]] = []
+
+    def close_lists_to(indent: int) -> None:
+        while list_stack and int(list_stack[-1]["indent"]) >= indent:
+            current = list_stack.pop()
+            if current["li_open"]:
+                rendered.append("</li>")
+            rendered.append(f'</{current["tag"]}>')
+
+    def special_line(raw_line: str) -> bool:
+        stripped = raw_line.strip()
+        return bool(
+            not stripped
+            or stripped.startswith(">")
+            or stripped.startswith("#")
+            or re.match(r"(\d+[.)]|[-*])\s+", stripped)
+        )
+
+    i = 0
+    while i < len(lines):
+        raw = lines[i]
+        stripped = raw.strip()
+        if not stripped:
+            i += 1
+            continue
+
+        indent = len(raw) - len(raw.lstrip(" "))
+        heading_match = re.match(r"^(#{1,6})\s+(.*)$", stripped)
+        if heading_match:
+            close_lists_to(0)
+            level = len(heading_match.group(1))
+            text = _format_inline_markdown(heading_match.group(2).strip())
+            rendered.append(f'<h{level} class="paper-commentary-heading">{text}</h{level}>')
+            i += 1
+            continue
+
+        list_match = re.match(r"^(\d+)[.)]\s+(.*)$", stripped)
+        list_tag = "ol"
+        item_text = ""
+        if list_match:
+            item_text = list_match.group(2).strip()
+        else:
+            bullet_match = re.match(r"^[-*]\s+(.*)$", stripped)
+            if bullet_match:
+                list_tag = "ul"
+                item_text = bullet_match.group(1).strip()
+
+        if item_text:
+            while list_stack and indent < int(list_stack[-1]["indent"]):
+                current = list_stack.pop()
+                if current["li_open"]:
+                    rendered.append("</li>")
+                rendered.append(f'</{current["tag"]}>')
+            if list_stack and indent == int(list_stack[-1]["indent"]) and list_tag != list_stack[-1]["tag"]:
+                close_lists_to(indent)
+            if not list_stack or indent > int(list_stack[-1]["indent"]) or list_tag != list_stack[-1]["tag"]:
+                rendered.append(f'<{list_tag} class="paper-commentary-list paper-commentary-list--{list_tag}">')
+                list_stack.append({"tag": list_tag, "indent": indent, "li_open": False})
+            current = list_stack[-1]
+            if current["li_open"]:
+                rendered.append("</li>")
+            rendered.append("<li>")
+            rendered.append(_format_inline_markdown(item_text))
+            current["li_open"] = True
+            i += 1
+            continue
+
+        if stripped.startswith(">"):
+            quote_lines: list[str] = []
+            while i < len(lines) and lines[i].strip().startswith(">"):
+                quote_lines.append(lines[i].strip()[1:].strip())
+                i += 1
+            quote_html = "<br>".join(_format_inline_markdown(line) for line in quote_lines if line)
+            block = f'<blockquote><p>{quote_html}</p></blockquote>'
+            if list_stack and indent > int(list_stack[-1]["indent"]) and list_stack[-1]["li_open"]:
+                rendered.append(block)
+            else:
+                close_lists_to(0)
+                rendered.append(block)
+            continue
+
+        paragraph_lines = [stripped]
+        i += 1
+        while i < len(lines) and lines[i].strip() and not special_line(lines[i]):
+            paragraph_lines.append(lines[i].strip())
+            i += 1
+        paragraph_html = "<br>".join(_format_inline_markdown(line) for line in paragraph_lines)
+        block = f"<p>{paragraph_html}</p>"
+        if list_stack and indent > int(list_stack[-1]["indent"]) and list_stack[-1]["li_open"]:
+            rendered.append(block)
+        else:
+            close_lists_to(0)
+            rendered.append(block)
+
+    close_lists_to(0)
     return "".join(rendered)
+
+
+def _split_sources_evidence(body: str) -> tuple[str, str]:
+    match = re.search(r"(?mi)^\s*##\s+Sources\s*&\s*Evidence\s*$", body)
+    if not match:
+        return body.strip(), ""
+    main_body = body[: match.start()].strip()
+    evidence_body = body[match.end() :].strip()
+    return main_body, evidence_body
 
 
 def _score_stars(score: int) -> str:
     safe_score = max(1, min(5, score))
     return "★" * safe_score + "☆" * (5 - safe_score)
+
+
+def _card_type_badge(commentary: Commentary) -> str:
+    actionability = commentary.get("relevance_actionability")
+    if commentary.get("proposed_update") or (isinstance(actionability, int) and actionability >= 4):
+        return '<span class="paper-commentary-type" title="Practical card">⚙️</span>'
+    return '<span class="paper-commentary-type" title="Analytical card">📚</span>'
 
 
 def _relevance_scores(commentary: Commentary) -> dict[str, int] | None:
@@ -199,33 +350,43 @@ def commentary_html(commentary: Commentary) -> str:
     category_label = html.escape(commentary["category_label"])
     anchor_preview = html.escape(commentary["anchor_preview"])
     relevance_summary_html, relevance_grading_html = _relevance_html(commentary)
+    type_badge_html = _card_type_badge(commentary)
+
+    main_body, evidence_body = _split_sources_evidence(commentary.get("body", ""))
+    body_html = commentary_body_html(main_body)
+    evidence_markdown_html = commentary_body_html(evidence_body) if evidence_body else ""
 
     proposed_update = commentary.get("proposed_update")
     update_details = commentary.get("update_details")
     update_html = ""
     if proposed_update:
-        help_icon = ""
+        update_details_html = ""
         if update_details:
-            help_icon = (
-                f'<span class="paper-commentary-help-icon">?'
-                f'<span class="paper-commentary-tooltip">{html.escape(update_details)}</span>'
-                f"</span>"
+            update_details_html = (
+                f'<span class="paper-commentary-update-details"> '
+                f'{html.escape(update_details)}</span>'
             )
         update_html = (
             f'<div class="paper-commentary-update-box">'
             f'<span class="paper-commentary-update-label">Proposed update:</span>'
             f'<span class="paper-commentary-update-text">{html.escape(proposed_update)}</span>'
-            f"{help_icon}"
+            f"{update_details_html}"
             f"</div>"
         )
 
     sources_html = ""
+    source_parts: list[str] = []
     if commentary["sources"]:
-        inner_sources = render_sources_html(commentary["sources"])
+        source_parts.append(render_sources_html(commentary["sources"]))
+    if evidence_markdown_html:
+        source_parts.append(
+            f'<div class="paper-commentary-sources-markdown">{evidence_markdown_html}</div>'
+        )
+    if source_parts:
         sources_html = (
             f'<details class="paper-commentary-sources-details">'
             f'<summary class="paper-commentary-sources-summary">Sources & Evidence</summary>'
-            f"{inner_sources}"
+            f'<div class="paper-commentary-sources-panel">{"".join(source_parts)}</div>'
             f"</details>"
         )
 
@@ -248,10 +409,6 @@ def commentary_html(commentary: Commentary) -> str:
         if anchor_preview
         else ""
     )
-    # Вместо немедленного рендера тела комментария в HTML вставляем плейсхолдер.
-    # Он будет заменён на Markdown через st.markdown на этапе финального рендера,
-    # чтобы корректно отработал парсер формул ($...$) и Markdown.
-    body_placeholder = f"__COMMENTARY_BODY_{commentary_id}__"
 
     return (
         f'<details class="paper-commentary paper-commentary--{commentary_id}" '
@@ -259,6 +416,7 @@ def commentary_html(commentary: Commentary) -> str:
         f'<summary class="paper-commentary-summary">'
         f'<div class="paper-commentary-head">'
         f'<span class="paper-commentary-marker">{marker}</span>'
+        f"{type_badge_html}"
         f'<span class="paper-commentary-label">Comparative Claim <span class="paper-commentary-id">#{commentary_id}</span></span>'
         f"{relevance_summary_html}"
         f'<span class="paper-commentary-category">{category_label}</span>'
@@ -270,7 +428,7 @@ def commentary_html(commentary: Commentary) -> str:
         f"</summary>"
         f'<div class="paper-commentary-body">'
         f"{preview_html}"
-        f"{body_placeholder}"
+        f"{body_html}"
         f"{update_html}"
         f"{filenote_html}"
         f"{sources_html}"

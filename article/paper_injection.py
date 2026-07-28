@@ -30,7 +30,7 @@ def inject_commentaries(body_html: str, grouped: dict[str, list[Commentary]]) ->
                 f"<{tag}>{heading}</{tag}>"
                 f"</div>"
             )
-            body_html, count = re.subn(pattern, replacement, body_html, count=1)
+            body_html, count = re.subn(pattern, lambda _match: replacement, body_html, count=1)
             if count:
                 break
 
